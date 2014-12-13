@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Exploring Erdos-Renyi Random Graphs</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Exploring Erdos-Renyi Random Graphs">
+  <meta name="author" content="Fernando J. Pérez García">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/quiz/css/demo.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+<link rel=stylesheet href="./assets/css/slidify.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Exploring Erdos-Renyi Random Graphs</h1>
+    <h2>G(n,p) graphs properties</h2>
+    <p>Fernando J. Pérez García<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Introduction</h2>
+  </hgroup>
+  <article data-timings="">
+    <h4><b>What is a Random Graph</b></h4>
+
+<p><br/>
+A random graph is a model network in which some specific set of parameters take 
+fixed values, but the network is random in other respects. One of the simplest 
+examples of a random graph is the <b>G(n,p)</b> network, studied by 
+<b>Erdos-Renyi</b> during the 1960&#39;s. This graphs are generated with 2 
+parameters: <b>n</b> the total number of vertices in the graph, <b>p</b> the 
+probability of edges between vertices.<br>
+In this networks the number of edges is not fixed but there are some 
+values of p that suppose some important changes in the network:</p>
+
+<ul>
+<li>if \(p = \frac{1}{n^2}\), the network has some links</li>
+<li>if \(p = \frac{1}{n^\frac{3}{2}}\), the network has a component with at least three links</li>
+<li>if \(p = \frac{1}{n}\), the network has a cycle</li>
+<li>if \(p = \frac{log(n)}{n}\), the network is connected (there are no isolated nodes)</li>
+</ul>
+
+<p><a href="https://fperezgarcia.shinyapps.io/shinyApp/">Exploring Random Graphs</a> 
+shiny app, helps you test this characteristics of 
+the Erdos-Renyi G(n,p) random graphs.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Graph Samples, for n = 70 nodes and different values of p</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div style='float:left;width:48%;' class='centered'>
+  <p><img src="assets/fig/unnamed-chunk-1.png" alt="plot of chunk unnamed-chunk-1"> </p>
+
+</div>
+<div style='float:right;width:48%;'>
+  <h3>R Code</h3>
+
+<pre><code class="r">aGraph &lt;- function(n, p, title){
+    g &lt;- erdos.renyi.game(n, p)
+
+    if (max(degree(g)) &gt; 0)
+        dclust = cut(degree(g),9,label=F)
+    else
+        dclust = 1
+
+    V(g)$color = brewer.pal(9,&quot;Blues&quot;)[dclust]
+
+    plot.igraph(g, edge.arrow.size=0, edge.curved=FALSE,
+            layout = layout.fruchterman.reingold(g, niter=10000),
+            vertex.label=NA, vertex.color=V(g)$color,
+            vertex.size=6, main=paste(title,&quot;\n&quot;,&quot;Probability: &quot;,p))
+}
+
+library(igraph)
+par(mfrow=c(2,2))
+aGraph(70, 0.0004, &quot;Some links&quot;)
+aGraph(70, 0.004, &quot;At least three links&quot;)
+aGraph(70, 0.025, &quot;A cycle&quot;)
+aGraph(70, 0.08, &quot;Connected&quot;)
+</code></pre>
+
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Shiny App</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div style='float:left;width:48%;' class='centered'>
+  <p><br/>
+<img src="./assets/img/shinyApp.png" alt="Exploring Random Graphs" width="500"></p>
+
+</div>
+<div style='float:right;width:48%;'>
+  <p><b>Left panel</b> alows you to select:</p>
+
+<ul>
+<li>Parameter <b>n</b> (number of nodes)</li>
+<li>Parameter <b>p</b> (probability of generating a link)</li>
+<li>Network parameter by which nodes are coloured</li>
+</ul>
+
+<p><b>Main Panel</b>  has three tabs:</p>
+
+<ul>
+<li><b>Tab1</b>, shows a hint text with some interesting probablity values for the given 
+value of n, and a plot with the resulting network</li>
+<li><b>Tab2</b>, contains an histogram of nodes degree distribution</li>
+<li><b>Tab3</b>, includes the application help</li>
+</ul>
+
+<p><a href="https://fperezgarcia.shinyapps.io/shinyApp/">Exploring Random Graphs</a></p>
+
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Random Graphs G(n,p) Question</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div class="quiz quiz-single well ">
+  <p>Keeping the same value of p, as n gets larger, what happens with the average 
+degree in the network?</p>
+
+<ol>
+<li><em>Average degree increases</em></li>
+<li>Average degree decreases</li>
+</ol>
+
+  <button class="quiz-submit btn btn-primary">Submit</button>
+  <button class="quiz-toggle-hint btn btn-info">Show Hint</button>
+  <button class="quiz-show-answer btn btn-success">Show Answer</button>
+  <button class="quiz-clear btn btn-danger">Clear</button>
+  
+  <div class="quiz-hint">
+  <p>As n gets larger, there are more nodes in the network, therefore more nodes 
+applying for generating a new link.</p>
+
+</div>
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Introduction'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Graph Samples, for n = 70 nodes and different values of p'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Shiny App'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Random Graphs G(n,p) Question'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/quiz/js/jquery.quiz.js"></script>
+<script src="libraries/widgets/quiz/js/mustache.min.js"></script>
+<script src="libraries/widgets/quiz/js/quiz-app.js"></script>
+
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
